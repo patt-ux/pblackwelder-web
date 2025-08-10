@@ -7,8 +7,7 @@ function Footer() {
     <footer className="footer section">
     <div className="footer-content">
       <div className="footer-section dt-text-left">
-        <h3>PBlackwelder Web</h3>
-        <p>Building amazing web experiences.</p>
+        <img className="footer-logo" src={logo} alt="Patricia Blackwelder" />
       </div>
       <div className="footer-section">
         <div className="social-media">
