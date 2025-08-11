@@ -1,38 +1,58 @@
-export const Portfolio = () => {
+import React from 'react';
+
+function Portfolio() {
+  const placeholderImage = process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg';
+  const portfolioItems = [
+    {
+      title: 'Project 1',
+      description: 'Description of Project 1',
+      image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
+      link: '/portfolio/project1'
+    },{
+      title: 'Project 2',
+      description: 'Description of Project 2',
+      image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
+      link: '/portfolio/project2'
+    },{
+      title: 'Project 3',
+      description: 'Description of Project 3',
+      image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
+      link: '/portfolio/project3'
+    },
+  ];
   return (
-    <section className="portfolio-section section">
-        <div className="container">
-          <div className="section-header">
-            <div className="section-marker">*</div>
-            <h3 className="section-subtitle">My Work Portfolio</h3>
-            <h2 className="section-title">My Works Portfolio</h2>
-          </div>
-          
-          <div className="portfolio-grid">
-            <div className="portfolio-item">
-              <div className="portfolio-image"></div>
-              <div className="portfolio-overlay">
-                <div className="portfolio-content">
-                  <div className="portfolio-category">Digital Marketing</div>
-                  <div className="portfolio-subcategory">Art, Direction</div>
-                </div>
+  <section id="portfolio">
+    <div className="container">
+      <div className="st-section-heading st-style1">
+        <h4 className="st-section-heading-title">PORTFOLIO</h4>
+        <h2 className="st-section-heading-subtitle">PORTFOLIO</h2>
+      </div>
+      <div className="container">
+        <div className="row">
+      {portfolioItems.map((item, index) => (
+        <div className="col-lg-4 col-md-6" key={index}>
+        <div className="st-portfolio-single st-style1 st-lightgallery">
+          <div className="st-portfolio-item">
+            <a href={item.link} className="st-portfolio st-zoom st-lightbox-item" target="_blank" rel="noopener noreferrer">
+              <div className="st-portfolio-img st-zoom-in">
+                <img src={item.image ?? placeholderImage} alt={item.title} />
               </div>
-            </div>
-            <div className="portfolio-item">
-              <div className="portfolio-image"></div>
-            </div>
-            <div className="portfolio-item">
-              <div className="portfolio-image"></div>
-            </div>
-            <div className="portfolio-item">
-              <div className="portfolio-image"></div>
-            </div>
-          </div>
-          
-          <div className="portfolio-cta">
-            <button className="more-works-btn">More works</button>
+              <div className="st-portfolio-item-hover">
+                <i className="fas fa-plus-circle"></i>
+                <h5>{item.title}</h5>
+                <p>{item.description}</p>
+              </div>
+            </a>
           </div>
         </div>
-      </section>
+      </div>
+      ))}
+          
+      </div>
+    </div>
+    </div>
+  </section>
   )
-};
+}
+
+export default Portfolio;

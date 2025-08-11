@@ -1,12 +1,13 @@
-export const Contact = () => {
+export default function Contact() {
   return (
-    <section className="contact-section section">
+    <section id="contact" className="contact-section section">
     <div className="container">
+      <div className="st-section-heading st-style1">
+        <h4 className="st-section-heading-title">CONTACT</h4>
+        <h2 className="st-section-heading-subtitle">CONTACT</h2>
+      </div>
       <div className="contact-content">
         <div className="contact-info">
-          <div className="contact-circle">
-            <div className="contact-icon">📧</div>
-          </div>
           <div className="contact-details">
             <h3>Mail: patty@pblackwelder.com</h3>
             <p>I'm always looking for new opportunities and collaborations. Feel free to reach out to me via email or connect with me on social media.</p>
