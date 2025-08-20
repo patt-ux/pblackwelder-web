@@ -2,12 +2,16 @@ import React from 'react';
 import ProgressBar from '../ProgressBar';
 
 const skills = [
-  { title: 'Photoshop', percent: 95 },
-  { title: 'Motion Graphic', percent: 75 },
-  { title: 'Adobe XD', percent: 90 },
-  { title: 'UX Design', percent: 85 },
-  { title: 'HTML', percent: 80 },
-  { title: 'Digital Marketing', percent: 90 },
+  { title: 'React', percent: 95 },
+  { title: 'Node.js', percent: 90 },
+  { title: 'PHP', percent: 70 },
+  { title: 'Python', percent: 70 },
+  { title: 'Golang', percent: 70 },
+  { title: 'C#', percent: 70 },
+  { title: '.NET ', percent: 70 },
+  { title: 'HTML/CSS Wizardry', percent: 95 },
+  { title: 'SQL', percent: 70 },
+  { title: 'GCP', percent: 80 },
 ];
 
 const Skills = () => (
@@ -45,6 +49,7 @@ const Skills = () => (
         </div>
       </div>
     </div>
+    <div className="st-height-b95 st-height-lg-b75"></div>
   </section>
 );
 

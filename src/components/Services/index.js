@@ -91,7 +91,6 @@ export default function Services() {
         ))}
       </div>
     </div>
-    <div className="st-height-b100 st-height-lg-b80"></div>
   </section>
   );
 }

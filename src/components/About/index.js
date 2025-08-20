@@ -1,4 +1,5 @@
 import React from 'react';
+import aboutImage from '../../assets/headshot.webp';
 
 const About = () => (
   <section id="about" className="st-about-wrap">
@@ -14,7 +15,7 @@ const About = () => (
       <div className="row">
         <div className="col-lg-6 wow fadeInLeft">
           <div className="st-about-img-wrap">
-            <div className="st-about-img st-dynamic-bg st-bg" style={{backgroundImage: `url(${process.env.PUBLIC_URL}/assets/img/section/about.jpg)`}}></div>
+            <div className="st-about-img st-dynamic-bg st-bg" style={{backgroundImage: `url(${aboutImage})`}}></div>
           </div>
           <div className="st-height-b0 st-height-lg-b30"></div>
         </div>

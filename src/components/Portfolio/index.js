@@ -4,21 +4,31 @@ function Portfolio() {
   const placeholderImage = process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg';
   const portfolioItems = [
     {
-      title: 'Project 1',
-      description: 'Description of Project 1',
+      title: 'Mad Game Love',
+      description: 'Cloud-Enabled Gaming Community Platform',
       image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
-      link: '/portfolio/project1'
+      link: '/portfolio/project1',
+      tech: 'React, Firebase Authentication, Firestore, Google Cloud Functions, GCP Hosting'
     },{
-      title: 'Project 2',
-      description: 'Description of Project 2',
+      title: 'Minecraft Server Manager',
+      description: 'Cloud-Optimized Game Server Hosting Platform',
       image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
-      link: '/portfolio/project2'
+      link: '/portfolio/project2',
+      tech: 'Firebase Hosting, React, Google Cloud Spot VMs, Cloud Functions (Node.js), Firestore'
     },{
-      title: 'Project 3',
-      description: 'Description of Project 3',
+      title: 'Congregation Communication CRM',
+      description: 'Custom CRM with SMS Outreach Capability',
       image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
-      link: '/portfolio/project3'
+      link: '/portfolio/project3',
+      tech: 'React, .NET, Ministry Platform API, Twilio SMS Integration'
     },
+    {
+      title: 'Customer Recommendation & Notification System',
+      description: 'Cloud-Integrated Recommendation Engine for SaaS Marketing Platform',
+      image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
+      link: '/portfolio/project4',
+      tech: 'PHP, MySQL, Google Cloud Storage, Python, React, Twirp Protocols'
+    }
   ];
   return (
   <section id="portfolio">
@@ -51,6 +61,7 @@ function Portfolio() {
       </div>
     </div>
     </div>
+    <div className="st-height-b95 st-height-lg-b75"></div>
   </section>
   )
 }

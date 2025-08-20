@@ -9,6 +9,7 @@ const Blog = () => (
       </div>
       <div className="st-height-b25 st-height-lg-b25"></div>
     </div>
+    <div className="st-height-b95 st-height-lg-b75"></div>
   </section>
 );
 

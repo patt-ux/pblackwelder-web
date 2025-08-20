@@ -1,4 +1,5 @@
 import React from 'react';
+import heroImage from '../../assets/hero-grad.webp';
 
 const Hero = () => (
   <>
@@ -18,12 +19,12 @@ const Hero = () => (
       </div>
       {/* Hero Image - Social Link Group */}
       <div className="st-hero-img st-to-right">
-        <img className="wow fadeInRight" src={process.env.PUBLIC_URL + "/assets/img/section/hero-img.jpg"} alt="Hero" />
+        <img className="wow fadeInRight" src={heroImage} alt="Hero" />
         <div className="st-social-group wow fadeInLeft">
           <div className="st-social-link">
-            <a href="#" className="st-social-btn active">
-              <span className="st-social-icon"><i className="fab fa-dribbble"></i></span>
-              <span className="st-icon-name">Dribbble</span>
+            <a href="#" className="st-social-btn">
+              <span className="st-social-icon"><i className="fab fa-github"></i></span>
+              <span className="st-icon-name">GitHub</span>
             </a>
             <a href="#" className="st-social-btn">
               <span className="st-social-icon"><i className="fab fa-behance"></i></span>
@@ -33,7 +34,7 @@ const Hero = () => (
               <span className="st-social-icon"><i className="fab fa-twitter"></i></span>
               <span className="st-icon-name">Twitter</span>
             </a>
-            <a href="#" className="st-social-btn">
+            <a href="#" className="st-social-btn active">
               <span className="st-social-icon"><i className="fab fa-linkedin"></i></span>
               <span className="st-icon-name">LinkedIn</span>
             </a>
