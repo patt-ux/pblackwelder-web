@@ -1,0 +1,16 @@
+.st-site-branding img{
+  height: 40px;
+  filter: invert(1);
+}
+
+.st-nav .st-nav-list>li>a{
+  color: #fff;
+}
+
+.st-nav .st-nav-list>li>a:hover {
+  color: #fec544;
+  border-bottom: 2px solid #fec544;
+}
+.st-nav .st-nav-list>li.active>a {
+  border-bottom: 2px solid #fec544;
+}
