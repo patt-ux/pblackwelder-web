@@ -8,15 +8,33 @@ import { db } from './firebase';
  */
 export const saveContactSubmission = async (formData, recaptchaToken) => {
   try {
-    const docRef = await addDoc(collection(db, 'contactSubmissions'), {
+    // Build submission object with all fields
+    const submission = {
       name: formData.name,
       email: formData.email,
       subject: formData.subject,
-      message: formData.message,
       recaptchaToken: recaptchaToken,
       timestamp: serverTimestamp(),
       status: 'new'
-    });
+    };
+
+    // Add fields based on subject type
+    if (formData.subject === 'general') {
+      submission.message = formData.message;
+    } else if (formData.subject === 'job') {
+      submission.company = formData.company;
+      submission.position = formData.position;
+      submission.location = formData.location;
+      submission.website = formData.website;
+      submission.expectedStartDate = formData.expectedStartDate;
+      submission.jobDescription = formData.jobDescription;
+    } else if (formData.subject === 'project') {
+      submission.budget = formData.budget;
+      submission.timeline = formData.timeline;
+      submission.projectDescription = formData.projectDescription;
+    }
+
+    const docRef = await addDoc(collection(db, 'contactSubmissions'), submission);
     return { success: true, id: docRef.id };
   } catch (error) {
     console.error('Error saving contact submission:', error);

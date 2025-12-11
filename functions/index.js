@@ -49,6 +49,201 @@ async function verifyRecaptcha(token) {
 }
 
 /**
+ * Detect spam patterns in submission content
+ * 
+ * This function analyzes contact form submissions for common spam indicators:
+ * - Explicit/adult content (common WordPress spam)
+ * - Advertising/promotional language
+ * - Generic promotional phrases
+ * - Suspicious URLs and domains
+ * - Financial scams
+ * - Missing required fields for specific submission types
+ * 
+ * Returns an object with spam detection results including score and reasons.
+ */
+function detectSpam(submission) {
+  const spamPatterns = [
+    // Advertising/promotional spam
+    /\b(advertise|advertising|advertisement|ads|promote|promotion|marketing|seo|search engine optimization)\b/i,
+    /\b(backlink|backlinks|link building|increase traffic|website traffic|organic traffic|boost your|improve ranking)\b/i,
+    /\b(click here|visit our|check out|learn more about|see more|read more|find out more)\b/i,
+    /\b(limited time|act now|don't miss|special offer|exclusive deal|discount|sale|buy now)\b/i,
+    /\b(guaranteed|100% free|no cost|risk free|money back|free trial)\b/i,
+    
+    // Generic promotional phrases (common spam)
+    /\b(i like your website|nice website|great site|love your site|beautiful website)\b/i,
+    /\b(we can help|we offer|our services|our company|our team|we provide)\b/i,
+    /\b(contact us|reach out|get in touch with us|call us|email us|visit us)\b/i,
+    /\b(want to advertise|advertising opportunity|sponsorship|partnership opportunity)\b/i,
+    
+    // Explicit/adult content spam (common WordPress spam)
+    /\b(sex|porn|xxx|adult|nude|naked|escort|hooker|prostitute|dating|singles|meet singles)\b/i,
+    /\b(casual encounters|hookup|one night stand|fuck|fucking|dick|pussy|ass|bitch)\b/i,
+    /\b(cam girl|camgirl|webcam|live cam|adult cam|sex cam|porn cam)\b/i,
+    /\b(erotic|erotica|fetish|bdsm|kink|kinky|milf|cougar|sugar daddy)\b/i,
+    /\b(penis|penis enlargement|male enhancement|viagra|cialis|levitra)\b/i,
+    /\b(breast|boobs|tits|titties|ass|butt|buttocks|thigh|thighs)\b/i,
+    /\b(orgasm|climax|cum|sperm|ejaculation|masturbat|masturbation)\b/i,
+    /\b(strip club|stripclub|strip tease|lap dance|peep show)\b/i,
+    /\b(swingers|swinger|swinging|threesome|orgy|orgies|gangbang)\b/i,
+    /\b(incest|incestuous|rape|raping|molest|molestation|pedophile)\b/i,
+    
+    // Suspicious patterns
+    /\b(bit\.ly|tinyurl|short\.link|goo\.gl|t\.co|ow\.ly)\b/i, // URL shorteners
+    /\b(crypto|bitcoin|cryptocurrency|investment|trading|forex|nft)\b/i,
+    /\b(loan|debt|credit|refinance|mortgage|quick cash|payday)\b/i,
+    /\b(pharmacy|pills|medication|prescription)\b/i,
+    /\b(work from home|make money|earn \$|get rich|passive income)\b/i,
+    
+    // Generic messages (often spam)
+    /^(hi|hello|hey)[\s,]*$/i,
+    /^(thanks?|thank you)[\s,]*$/i,
+    /^(test|testing|test message)[\s,]*$/i,
+    /^(spam|junk)[\s,]*$/i,
+  ];
+
+  // Combine all text fields for analysis
+  const textContent = [
+    submission.name || '',
+    submission.email || '',
+    submission.subject || '',
+    submission.message || '',
+    submission.company || '',
+    submission.position || '',
+    submission.location || '',
+    submission.jobDescription || '',
+    submission.projectDescription || '',
+    submission.website || '',
+    submission.budget || '',
+    submission.timeline || '',
+  ]
+    .join(' ')
+    .toLowerCase();
+
+  // Check for spam patterns
+  const matchedPatterns = [];
+  for (const pattern of spamPatterns) {
+    if (pattern.test(textContent)) {
+      matchedPatterns.push(pattern.source);
+    }
+  }
+
+  // Check for suspicious email domains
+  const suspiciousEmailDomains = [
+    /@(tempmail|guerrillamail|10minutemail|mailinator|throwaway)\./i,
+    /@[a-z]{1,3}\.[a-z]{1,3}$/i, // Very short domains like a.b
+  ];
+
+  let suspiciousEmail = false;
+  if (submission.email) {
+    for (const pattern of suspiciousEmailDomains) {
+      if (pattern.test(submission.email)) {
+        suspiciousEmail = true;
+        break;
+      }
+    }
+  }
+
+  // Check for excessive links
+  const linkPattern = /https?:\/\/[^\s]+/gi;
+  const links = textContent.match(linkPattern) || [];
+  const hasExcessiveLinks = links.length > 2;
+
+  // Check for repeated characters (spam technique)
+  const repeatedCharPattern = /(.)\1{4,}/i; // Same character repeated 5+ times
+  const hasRepeatedChars = repeatedCharPattern.test(textContent);
+
+  // Check message length (very short messages are often spam)
+  const messageText = (
+    submission.message || 
+    submission.jobDescription || 
+    submission.projectDescription || 
+    ''
+  ).trim();
+  const isTooShort = messageText.length < 10 && messageText.length > 0;
+
+  // Check for generic names
+  const genericNames = ['test', 'admin', 'user', 'guest', 'spam', 'bot'];
+  const isGenericName = genericNames.some(name => 
+    submission.name && submission.name.toLowerCase().trim() === name
+  );
+
+  // Calculate spam score
+  let spamScore = 0;
+  const reasons = [];
+
+  if (matchedPatterns.length > 0) {
+    // Check if explicit content patterns were matched
+    const explicitPatterns = [
+      /sex|porn|xxx|adult|nude|escort|hooker|prostitute|dating|singles|hookup/i,
+      /fuck|dick|pussy|ass|bitch|cam girl|erotic|fetish|bdsm/i,
+      /penis|breast|orgasm|strip|swinger|incest|rape|molest/i,
+    ];
+    
+    const hasExplicitContent = explicitPatterns.some(pattern => 
+      pattern.test(textContent)
+    );
+    
+    if (hasExplicitContent) {
+      // Explicit content gets higher penalty
+      spamScore += matchedPatterns.length * 5;
+      reasons.push(`Explicit content detected (${matchedPatterns.length} pattern(s))`);
+    } else {
+      spamScore += matchedPatterns.length * 2;
+      reasons.push(`Matched ${matchedPatterns.length} spam pattern(s)`);
+    }
+  }
+
+  if (suspiciousEmail) {
+    spamScore += 3;
+    reasons.push('Suspicious email domain');
+  }
+
+  if (hasExcessiveLinks) {
+    spamScore += 2;
+    reasons.push(`Excessive links (${links.length})`);
+  }
+
+  if (hasRepeatedChars) {
+    spamScore += 2;
+    reasons.push('Repeated characters detected');
+  }
+
+  if (isTooShort && submission.subject === 'general') {
+    spamScore += 1;
+    reasons.push('Message too short');
+  }
+
+  if (isGenericName) {
+    spamScore += 2;
+    reasons.push('Generic name detected');
+  }
+
+  // Check for mismatched subject/content
+  // If subject is "job" but no company/position provided, might be spam
+  if (submission.subject === 'job' && (!submission.company || !submission.position)) {
+    spamScore += 2;
+    reasons.push('Job inquiry missing required fields');
+  }
+
+  // If subject is "project" but no budget/timeline, might be spam
+  if (submission.subject === 'project' && (!submission.budget || !submission.timeline)) {
+    spamScore += 2;
+    reasons.push('Project inquiry missing required fields');
+  }
+
+  // Threshold: score >= 3 is considered spam
+  const isSpam = spamScore >= 3;
+
+  return {
+    isSpam,
+    spamScore,
+    reasons: reasons.join('; '),
+    matchedPatterns: matchedPatterns.slice(0, 5), // Limit to first 5 patterns
+  };
+}
+
+/**
  * Check if email has exceeded rate limit
  */
 async function checkRateLimit(email) {
@@ -111,6 +306,25 @@ exports.onContactSubmission = functions.firestore
         console.warn(`No reCAPTCHA token provided for submission ${submissionId}`);
         // In production, you might want to delete submissions without tokens
         // For now, we'll allow them but log a warning
+      }
+
+      // Check spam patterns
+      if (!shouldDelete) {
+        const spamResult = detectSpam(submission);
+        
+        if (spamResult.isSpam) {
+          console.warn(
+            `Spam detected for submission ${submissionId}. ` +
+            `Score: ${spamResult.spamScore}, Reasons: ${spamResult.reasons}`
+          );
+          shouldDelete = true;
+          deleteReason = `Spam detected (score: ${spamResult.spamScore}): ${spamResult.reasons}`;
+        } else if (spamResult.spamScore > 0) {
+          // Log suspicious but not spam submissions
+          console.log(
+            `Suspicious submission ${submissionId} (score: ${spamResult.spamScore}) but below threshold`
+          );
+        }
       }
 
       // Check rate limit

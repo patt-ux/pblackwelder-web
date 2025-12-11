@@ -11,7 +11,16 @@ const ContactForm = () => {
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
+    company: '',
+    position: '',
+    location: '',
+    website: '',
+    expectedStartDate: '',
+    jobDescription: '',
+    budget: '',
+    timeline: '',
+    projectDescription: ''
   });
 
   const handleChange = (e) => { 
@@ -54,7 +63,16 @@ const ContactForm = () => {
           name: '',
           email: '',
           subject: '',
-          message: ''
+          message: '',
+          company: '',
+          position: '',
+          location: '',
+          website: '',
+          expectedStartDate: '',
+          jobDescription: '',
+          budget: '',
+          timeline: '',
+          projectDescription: ''
         });
       } else {
         setAlertType('error');
@@ -92,10 +110,25 @@ const ContactForm = () => {
       setAlertMessage('Subject is required');
       return false;
     }
-    if (!formData.message || formData.message.trim() === '') {
-      setAlertType('error');
-      setAlertMessage('Message is required');
-      return false;
+    // Validate based on subject type
+    if (formData.subject === 'general') {
+      if (!formData.message || formData.message.trim() === '') {
+        setAlertType('error');
+        setAlertMessage('Message is required');
+        return false;
+      }
+    } else if (formData.subject === 'job') {
+      if (!formData.company || !formData.position || !formData.jobDescription) {
+        setAlertType('error');
+        setAlertMessage('Please fill in all required job fields');
+        return false;
+      }
+    } else if (formData.subject === 'project') {
+      if (!formData.budget || !formData.timeline || !formData.projectDescription) {
+        setAlertType('error');
+        setAlertMessage('Please fill in all required project fields');
+        return false;
+      }
     }
     return true;
   };
@@ -113,7 +146,6 @@ const ContactForm = () => {
     <div className="container">
       <div className="row">
         <div className="col-lg-6 m-auto">
-          <h3 className="st-contact-title">Just say Hello</h3>
           {alertMessage && (
             <div 
               id="st-alert" 
@@ -154,28 +186,114 @@ const ContactForm = () => {
               />
             </div>
             <div className="st-form-field">
-              <input 
-                type="text" 
-                id="subject" 
+              <label htmlFor="subject">Reason for Contact</label>
+              <select 
                 name="subject" 
-                placeholder="Your Subject" 
+                id="subject" 
                 value={formData.subject}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="">Select a reason...</option>
+                <option value="general">General Question</option>
+                <option value="job">Recruiter / Job Opportunity</option>
+                <option value="project">Freelance / Project Inquiry</option>
+              </select>
             </div>
+            {formData.subject === 'general' && (
             <div className="st-form-field">
-              <textarea 
-                cols="30" 
-                rows="10" 
-                id="msg" 
-                name="message" 
-                placeholder="Your Message" 
-                value={formData.message}
-                onChange={handleChange}
-                required
-              ></textarea>
+                <textarea 
+                  cols="30" 
+                  rows="10" 
+                  id="msg" 
+                  name="message" 
+                  placeholder="Your Message" 
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                ></textarea>
             </div>
+            )}
+            {formData.subject === 'job' && (
+                <>
+                <div className="st-form-field">
+                <input type="text" id="company" name="company" placeholder="Company Name" value={formData.company} onChange={handleChange} required />
+                </div>
+                <div className="st-form-field">
+                <input type="text" id="position" name="position" placeholder="Position" value={formData.position} onChange={handleChange} required />
+                </div>
+                <div className="st-form-field">
+                <input type="text" id="location" name="location" placeholder="Location" value={formData.location} onChange={handleChange} required />
+                </div>
+                <div className="st-form-field">
+                <input type="text" id="website" name="website" placeholder="Website" value={formData.website} onChange={handleChange} required />
+                </div>
+                <div className="st-form-field">
+                <label htmlFor="expectedStartDate">Expected Start Date</label>
+                <select 
+                  name="expectedStartDate" 
+                  id="expectedStartDate"
+                  value={formData.expectedStartDate}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select...</option>
+                  <option value="immediate">Immediate</option>
+                  <option value="1-3-months">1-3 Months</option>
+                  <option value="3-6-months">3-6 Months</option>
+                  <option value="6-12-months">6-12 Months</option>
+                  <option value="other">Other</option>
+                </select>
+                </div>
+              <div className="st-form-field">
+                  <textarea 
+                    cols="30" 
+                    rows="10" 
+                    id="jobDescription" 
+                    name="jobDescription" 
+                    placeholder="Job Description" 
+                    value={formData.jobDescription}
+                    onChange={handleChange}
+                    required
+                  ></textarea>
+              </div>
+            </>
+            )}
+            {formData.subject === 'project' && (
+              <>
+                <div className="st-form-field">
+                <input type="text" id="budget" name="budget" placeholder="Project Budget" value={formData.budget} onChange={handleChange} required />
+                </div>
+                <div className="st-form-field">
+                  <label htmlFor="timeline">Project Timeline</label>
+                  <select 
+                    name="timeline" 
+                    id="timeline"
+                    value={formData.timeline}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select...</option>
+                    <option value="small">Quick (1-3 Months)</option>
+                    <option value="medium">Medium (3-6 Months)</option>
+                    <option value="large">Large (6-12 Months)</option>
+                    <option value="extra-large">Extra Large (12-24 Months)</option>
+                  </select>
+                </div>
+                <div className="st-form-field">
+                <textarea 
+                  cols="30" 
+                  rows="10" 
+                  id="projectDescription" 
+                  name="projectDescription" 
+                  placeholder="Project Description" 
+                  value={formData.projectDescription}
+                  onChange={handleChange}
+                  required
+                ></textarea>
+              </div>
+              </>
+            )}
             <button 
               className="st-btn st-style1 st-color1" 
               type="submit" 
