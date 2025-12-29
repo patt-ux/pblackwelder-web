@@ -1657,6 +1657,44 @@ canvas {
     padding-right: 0px
   }
 }
+.case-study-links {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.st-case-study-link {
+  cursor: pointer;
+  text-align: center;
+  padding: 50px 30px;
+  border-radius: 3px;
+  -webkit-transition: all 0.4s ease;
+  transition: all 0.4s ease;
+  border: 1px solid #232935;
+  background-color: #101624
+}
+.st-case-study-link:hover {
+  background-color: #232935;
+  color: #fec544;
+}
+.st-iconbox-stacks {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.st-tech-stacks {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
 .st-iconbox-link {
   cursor: pointer;
 }
@@ -2586,10 +2624,6 @@ canvas {
 
 .st-post-tage-list li {
   margin-right: 5px
-}
-
-.st-post-tage-list li:not(:last-child):after {
-  content: ','
 }
 
 .st-post-tage-list li a:hover {

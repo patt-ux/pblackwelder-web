@@ -150,7 +150,7 @@ export const caseStudyList = [
         'Secure license enforcement within WordPress',
         'Scalable foundation for additional plugins or products'
     ],
-    techStack: ['Firebase Hosting', 'React', 'Google Cloud Functions', 'Firestore', 'Stripe'],
-    techBadges: ['Firebase Hosting', 'React', 'Google Cloud Functions', 'Firestore', 'Stripe']
+    techStack: ['Firebase Hosting', 'React', 'Google Cloud Functions', 'Firestore', 'Stripe', 'WordPress'],
+    techBadges: ['Firebase Hosting', 'React', 'Google Cloud Functions', 'Firestore', 'Stripe', 'WordPress']
   }
 ];

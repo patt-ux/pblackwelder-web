@@ -5,9 +5,10 @@ import { caseStudyList } from '../../constants/caseStudyList';
 import wordpressIcon from '../../assets/wplogo.svg';
 import minecraftIcon from '../../assets/minecraft.png';
 import { useNavigate } from 'react-router-dom';
-
+import { getTechBadge } from '../../constants/techStackIcons';
 export default function CaseStudies() {
   const navigate = useNavigate();
+  
   return (
   <section id="case-studies">
     <div className="container">
@@ -19,7 +20,7 @@ export default function CaseStudies() {
       <div className="container">
       <div className="row">
         {caseStudyList.map((caseStudy, index) => (
-        <div className="col-md-6" key={index}>
+        <div className="col-md-6 st-mb30" key={index}>
           <div className="st-iconbox st-iconbox-link st-style1" onClick={() => navigate(`/case-study/${caseStudy.id}`)}>
             <div className="st-iconbox-icon">
               {caseStudy.iconClass === 'faCode' && <FontAwesomeIcon icon={faCode} />}
@@ -27,9 +28,14 @@ export default function CaseStudies() {
               {caseStudy.iconClass === 'faMinecraft' && <img className="st-minecraft-logo" src={minecraftIcon} alt="Minecraft" />}
             </div>
             <h2 className="st-iconbox-title">{caseStudy.title}</h2>
-            <div className="st-iconbox-text">{caseStudy.description}</div>
+            <div className="st-iconbox-text">{caseStudy.teaser}</div>
+            <div className="st-iconbox-stacks">
+              {caseStudy.techStack.map((tech, index) => (
+                <div className="st-iconbox-stack-item" key={index}>{getTechBadge(tech)}</div>
+              ))}
             </div>
             <div className="st-height-b30 st-height-lg-b30"></div>
+          </div>
           </div>
         ))}
       </div>
