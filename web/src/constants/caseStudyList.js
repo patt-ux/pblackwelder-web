@@ -1,7 +1,7 @@
 import architectureDiagram from '../assets/mgl-cms-1.webp';
-import architectureDiagram2 from '../assets/mgl-cms-1.webp';
-import architectureDiagram3 from '../assets/mgl-cms-1.webp';
-import architectureDiagram4 from '../assets/mgl-cms-1.webp';
+import architectureDiagram2 from '../assets/mgl-event-2.webp';
+import architectureDiagram3 from '../assets/lava-addons-arch.webp';
+import architectureDiagram4 from '../assets/mgl-minecraft.webp';
 
 export const caseStudyList = [
   {
