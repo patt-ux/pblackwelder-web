@@ -1,32 +1,39 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
 function Portfolio() {
   const placeholderImage = process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg';
   const portfolioItems = [
     {
-      title: 'Mad Game Love',
-      description: 'Cloud-Enabled Gaming Community Platform',
+      title: 'Custom CMS with React & Firebase',
+      description: 'High-performance, serverless content management system (CMS) leveraging the Firebase ecosystem. This project demonstrates a modern, scalable approach to delivering dynamic website content with minimal infrastructure overhead',
       image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
-      link: '/portfolio/project1',
+      link: '/portfolio/#custom-cms-with-react-firebase',
+      tech: 'React, Firebase Authentication, Firestore, Google Cloud Functions, GCP Hosting'
+    },{
+      title: 'Gamer Streamer Integration with React & Firebase',
+      description: 'Enhanced a React-based CMS to display live and recent content from YouTube and Twitch channels efficiently. This project demonstrates a serverless, scalable approach to integrating third-party APIs while minimizing bandwidth usage and API quota consumption.',
+      image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
+      link: '/portfolio/#gamer-streamer-integration-with-react-firebase',
       tech: 'React, Firebase Authentication, Firestore, Google Cloud Functions, GCP Hosting'
     },{
       title: 'Minecraft Server Manager',
       description: 'Cloud-Optimized Game Server Hosting Platform',
       image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
-      link: '/portfolio/project2',
+      link: '/portfolio/#minecraft-server-manager',
       tech: 'Firebase Hosting, React, Google Cloud Spot VMs, Cloud Functions (Node.js), Firestore'
     },{
       title: 'Congregation Communication CRM',
       description: 'Custom CRM with SMS Outreach Capability',
       image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
-      link: '/portfolio/project3',
+      link: '/portfolio/#congregation-communication-crm',
       tech: 'React, .NET, Ministry Platform API, Twilio SMS Integration'
-    },
-    {
+    },{
       title: 'Customer Recommendation & Notification System',
       description: 'Cloud-Integrated Recommendation Engine for SaaS Marketing Platform',
       image: process.env.PUBLIC_URL + '/assets/img/portfolio/portfolio1.jpg',
-      link: '/portfolio/project4',
+      link: '/portfolio/#customer-recommendation-notification-system',
       tech: 'PHP, MySQL, Google Cloud Storage, Python, React, Twirp Protocols'
     }
   ];
@@ -48,7 +55,7 @@ function Portfolio() {
                 <img src={item.image ?? placeholderImage} alt={item.title} />
               </div>
               <div className="st-portfolio-item-hover">
-                <i className="fas fa-plus-circle"></i>
+                <FontAwesomeIcon icon={faPlusCircle} />
                 <h5>{item.title}</h5>
                 <p>{item.description}</p>
               </div>

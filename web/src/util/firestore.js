@@ -34,6 +34,9 @@ export const saveContactSubmission = async (formData, recaptchaToken) => {
       submission.projectDescription = formData.projectDescription;
     }
 
+    // Include honeypot field for server-side validation
+    submission.website_url = formData.website_url || '';
+
     const docRef = await addDoc(collection(db, 'contactSubmissions'), submission);
     return { success: true, id: docRef.id };
   } catch (error) {

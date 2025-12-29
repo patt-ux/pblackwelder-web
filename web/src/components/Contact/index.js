@@ -7,6 +7,7 @@ const ContactForm = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,8 +21,16 @@ const ContactForm = () => {
     jobDescription: '',
     budget: '',
     timeline: '',
-    projectDescription: ''
+    projectDescription: '',
+    website_url: '' // Honeypot field - should always be empty
   });
+
+  // Character limits
+  const CHAR_LIMITS = {
+    message: 2000,
+    jobDescription: 5000,
+    projectDescription: 5000
+  };
 
   const handleChange = (e) => { 
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,6 +38,27 @@ const ContactForm = () => {
     if (alertMessage) {
       setAlertMessage('');
     }
+  };
+
+  const handleSendAnother = () => {
+    setIsSuccess(false);
+    setAlertMessage('');
+    setFormData({
+      name: '',
+      email: '',
+      subject: '',
+      message: '',
+      company: '',
+      position: '',
+      location: '',
+      website: '',
+      expectedStartDate: '',
+      jobDescription: '',
+      budget: '',
+      timeline: '',
+      projectDescription: '',
+      website_url: ''
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -58,6 +88,7 @@ const ContactForm = () => {
       if (result.success) {
         setAlertType('success');
         setAlertMessage('Thank you! Your message has been sent successfully.');
+        setIsSuccess(true);
         // Reset form
         setFormData({
           name: '',
@@ -72,7 +103,8 @@ const ContactForm = () => {
           jobDescription: '',
           budget: '',
           timeline: '',
-          projectDescription: ''
+          projectDescription: '',
+          website_url: '' // Reset honeypot
         });
       } else {
         setAlertType('error');
@@ -88,6 +120,13 @@ const ContactForm = () => {
   };
 
   const validateForm = () => {
+    // Check honeypot field - if filled, it's a bot
+    if (formData.website_url && formData.website_url.trim() !== '') {
+      setAlertType('error');
+      setAlertMessage('Spam detected. Please try again.');
+      return false;
+    }
+
     if (!formData.name || formData.name.trim() === '') {
       setAlertType('error');
       setAlertMessage('Name is required');
@@ -117,16 +156,31 @@ const ContactForm = () => {
         setAlertMessage('Message is required');
         return false;
       }
+      if (formData.message.length > CHAR_LIMITS.message) {
+        setAlertType('error');
+        setAlertMessage(`Message must be ${CHAR_LIMITS.message} characters or less`);
+        return false;
+      }
     } else if (formData.subject === 'job') {
       if (!formData.company || !formData.position || !formData.jobDescription) {
         setAlertType('error');
         setAlertMessage('Please fill in all required job fields');
         return false;
       }
+      if (formData.jobDescription.length > CHAR_LIMITS.jobDescription) {
+        setAlertType('error');
+        setAlertMessage(`Job description must be ${CHAR_LIMITS.jobDescription} characters or less`);
+        return false;
+      }
     } else if (formData.subject === 'project') {
       if (!formData.budget || !formData.timeline || !formData.projectDescription) {
         setAlertType('error');
         setAlertMessage('Please fill in all required project fields');
+        return false;
+      }
+      if (formData.projectDescription.length > CHAR_LIMITS.projectDescription) {
+        setAlertType('error');
+        setAlertMessage(`Project description must be ${CHAR_LIMITS.projectDescription} characters or less`);
         return false;
       }
     }
@@ -146,45 +200,69 @@ const ContactForm = () => {
     <div className="container">
       <div className="row">
         <div className="col-lg-6 m-auto">
-          {alertMessage && (
+          {isSuccess ? (
             <div 
-              id="st-alert" 
-              className={`alert ${alertType === 'success' ? 'alert-success' : 'alert-danger'}`}
+              className="alert alert-success"
               style={{ 
-                marginBottom: '20px',
-                padding: '12px 15px',
-                borderRadius: '4px',
-                backgroundColor: alertType === 'success' ? '#d4edda' : '#f8d7da',
-                color: alertType === 'success' ? '#155724' : '#721c24',
-                border: `1px solid ${alertType === 'success' ? '#c3e6cb' : '#f5c6cb'}`
+                padding: '30px',
+                borderRadius: '8px',
+                backgroundColor: '#d4edda',
+                color: '#155724',
+                border: '1px solid #c3e6cb',
+                textAlign: 'center'
               }}
             >
-              {alertMessage}
+              <h3 style={{ marginTop: 0, marginBottom: '15px', fontSize: '24px' }}>
+                Message Sent Successfully! ✓
+              </h3>
+              <p style={{ marginBottom: '20px', fontSize: '16px' }}>
+                Thank you for reaching out! I'll get back to you as soon as possible.
+              </p>
+              <button 
+                className="st-btn st-style1 st-color1" 
+                onClick={handleSendAnother}
+                style={{ marginTop: '10px' }}
+              >
+                Send Another Message
+              </button>
             </div>
-          )}
-          <form onSubmit={handleSubmit} className="st-contact-form" id="contact-form">
-            <div className="st-form-field">
-              <input 
-                type="text" 
-                id="name" 
-                name="name" 
-                placeholder="Your Name" 
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="st-form-field">
-              <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                placeholder="Your Email" 
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          ) : (
+            <>
+              {alertMessage && (
+                <div 
+                  id="st-alert" 
+                  className={`alert ${alertType === 'success' ? 'alert-success' : 'alert-danger'}`}
+                  style={{ 
+                    marginBottom: '20px',
+                    padding: '12px 15px',
+                    borderRadius: '4px',
+                    backgroundColor: alertType === 'success' ? '#d4edda' : '#f8d7da',
+                    color: alertType === 'success' ? '#155724' : '#721c24',
+                    border: `1px solid ${alertType === 'success' ? '#c3e6cb' : '#f5c6cb'}`
+                  }}
+                >
+                  {alertMessage}
+                </div>
+              )}
+              <form onSubmit={handleSubmit} className="st-contact-form" id="contact-form">
+            {/* Honeypot field - hidden from users but visible to bots */}
+            <input
+              type="text"
+              name="website_url"
+              value={formData.website_url}
+              onChange={handleChange}
+              style={{
+                position: 'absolute',
+                left: '-9999px',
+                width: '1px',
+                height: '1px',
+                opacity: 0,
+                pointerEvents: 'none',
+                tabIndex: -1
+              }}
+              autoComplete="off"
+              tabIndex={-1}
+            />
             <div className="st-form-field">
               <label htmlFor="subject">Reason for Contact</label>
               <select 
@@ -200,8 +278,33 @@ const ContactForm = () => {
                 <option value="project">Freelance / Project Inquiry</option>
               </select>
             </div>
+            <div className="st-form-field">
+              <label htmlFor="name">Name</label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                placeholder="Your Name" 
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="st-form-field">
+              <label htmlFor="email">Email</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                placeholder="Your Email" 
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
             {formData.subject === 'general' && (
             <div className="st-form-field">
+                <label htmlFor="message">Message</label>
                 <textarea 
                   cols="30" 
                   rows="10" 
@@ -210,22 +313,30 @@ const ContactForm = () => {
                   placeholder="Your Message" 
                   value={formData.message}
                   onChange={handleChange}
+                  maxLength={CHAR_LIMITS.message}
                   required
                 ></textarea>
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '5px', textAlign: 'right' }}>
+                  {formData.message.length} / {CHAR_LIMITS.message} characters
+                </div>
             </div>
             )}
             {formData.subject === 'job' && (
                 <>
                 <div className="st-form-field">
+                <label htmlFor="company">Company Name</label>
                 <input type="text" id="company" name="company" placeholder="Company Name" value={formData.company} onChange={handleChange} required />
                 </div>
                 <div className="st-form-field">
+                <label htmlFor="position">Position</label>
                 <input type="text" id="position" name="position" placeholder="Position" value={formData.position} onChange={handleChange} required />
                 </div>
                 <div className="st-form-field">
+                <label htmlFor="location">Location</label>
                 <input type="text" id="location" name="location" placeholder="Location" value={formData.location} onChange={handleChange} required />
                 </div>
                 <div className="st-form-field">
+                <label htmlFor="website">Website</label>
                 <input type="text" id="website" name="website" placeholder="Website" value={formData.website} onChange={handleChange} required />
                 </div>
                 <div className="st-form-field">
@@ -246,6 +357,7 @@ const ContactForm = () => {
                 </select>
                 </div>
               <div className="st-form-field">
+                <label htmlFor="jobDescription">Job Description</label>
                   <textarea 
                     cols="30" 
                     rows="10" 
@@ -254,14 +366,19 @@ const ContactForm = () => {
                     placeholder="Job Description" 
                     value={formData.jobDescription}
                     onChange={handleChange}
+                    maxLength={CHAR_LIMITS.jobDescription}
                     required
                   ></textarea>
+                  <div style={{ fontSize: '12px', color: '#666', marginTop: '5px', textAlign: 'right' }}>
+                    {formData.jobDescription.length} / {CHAR_LIMITS.jobDescription} characters
+                  </div>
               </div>
             </>
             )}
             {formData.subject === 'project' && (
               <>
                 <div className="st-form-field">
+                <label htmlFor="budget">Project Budget</label>
                 <input type="text" id="budget" name="budget" placeholder="Project Budget" value={formData.budget} onChange={handleChange} required />
                 </div>
                 <div className="st-form-field">
@@ -281,6 +398,7 @@ const ContactForm = () => {
                   </select>
                 </div>
                 <div className="st-form-field">
+                <label htmlFor="projectDescription">Project Description</label>
                 <textarea 
                   cols="30" 
                   rows="10" 
@@ -289,8 +407,12 @@ const ContactForm = () => {
                   placeholder="Project Description" 
                   value={formData.projectDescription}
                   onChange={handleChange}
+                  maxLength={CHAR_LIMITS.projectDescription}
                   required
                 ></textarea>
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '5px', textAlign: 'right' }}>
+                  {formData.projectDescription.length} / {CHAR_LIMITS.projectDescription} characters
+                </div>
               </div>
               </>
             )}
@@ -304,6 +426,8 @@ const ContactForm = () => {
               {isSubmitting ? 'Sending...' : 'Send message'}
             </button>
           </form>
+            </>
+          )}
         </div>
         <div className="st-height-b0 st-height-lg-b30"></div>
       </div>

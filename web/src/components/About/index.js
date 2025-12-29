@@ -104,12 +104,16 @@ const About = () => {
                     <h2 className="st-text-block-title">Hi There! I'm Patricia Blackwelder</h2>
                     <h4 className="st-text-block-subtitle">Full-Stack Developer & Cloud Architect</h4>
                     <div className="st-text-block-text">
-                    <p>I have a passion for leading high-impact development initiatives and architecting robust, scalable applications. 
-                      With over two decades of experience across diverse industries, I specialize in full-stack development, 
-                      utilizing technologies like PHP, GoLang, Python, React, and C#/.NET.</p>
+                    <p>I'm a Senior/Staff-level software engineer and cloud architect with 28+ years of experience designing, building, and scaling software across enterprise, SaaS, and government environments. I specialize in full-stack development, cloud architecture (GCP Certified), and shipping reliable, maintainable products end-to-end.</p>
+                    <p>Over the years I've contributed to organizations including Intuit/Mailchimp, Tensure, CDC, Northrop Grumman, Coca-Cola, and IHG. I’ve built everything from large-scale internal platforms and recommendation engines to mobile apps, IoT systems, Chrome extensions, and cloud-hosted AI products.</p>
+                    <p>My strengths are deep technical versatility, strong architectural thinking, and the ability to take an idea from concept to a fully delivered, production-ready solution. I enjoy simplifying complex problems, improving developer experience, and creating tools that make teams more efficient and effective.</p>
+                    <p>I'm also passionate about mentoring engineers, conducting technical interviews, and helping teams grow—experience I gained while supporting internal staff development at Tensure.</p>
+                    <p>Outside of client work, I build independent SaaS products, Chrome extensions, mobile apps, and AI-powered tools.</p>
+                    <p>If you're looking for someone who can architect, build, scale, refine, and ship—without handholding—you’re in the right place.</p>
                     </div>
                     <div className="st-text-block-btn">
-                      <a href="#" onClick={handleDownloadClick} className="st-btn st-style1 st-color1">Download CV</a>
+                      <a href="#contact" className="st-btn st-style1 st-color1">Hire me</a>
+                      {/* <a href="#" onClick={handleDownloadClick} className="st-btn st-style1 st-color1">Download CV</a> */}
                     </div>
                   </div>
                 </div>
@@ -120,7 +124,7 @@ const About = () => {
       </section>
 
       {/* CV Download Modal */}
-      {showModal && (
+      {/* {showModal && (
         <div 
           className="cv-modal-overlay" 
           onClick={handleBackdropClick}
@@ -237,7 +241,7 @@ const About = () => {
             </form>
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 };

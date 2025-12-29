@@ -20,7 +20,7 @@ const Hero = () => (
       {/* Hero Image - Social Link Group */}
       <div className="st-hero-img st-to-right">
         <img className="wow fadeInRight" src={heroImage} alt="Hero" />
-        <div className="st-social-group wow fadeInLeft">
+        {/* <div className="st-social-group wow fadeInLeft">
           <div className="st-social-link">
             <a href="https://github.com/patt-ux" className="st-social-btn">
               <span className="st-social-icon"><i className="fab fa-github"></i></span>
@@ -31,7 +31,7 @@ const Hero = () => (
               <span className="st-icon-name">LinkedIn</span>
             </a>
           </div>
-        </div>
+        </div> */}
       </div>
       <div id="particles-js"></div>
     </section>

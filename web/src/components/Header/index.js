@@ -9,22 +9,23 @@ const Header = () => {
         <div className="container">
           <div className="st-main-header-in">
             <div className="st-main-header-left">
-              <a className="st-site-branding" href="#home">
-                <img src={logo} alt="Davis" />
+              <a className="st-site-branding" href="/">
+                <img src={logo} alt="Patricia Blackwelder" />
               </a>
             </div>
-            {/* <div className="st-main-header-right">
+            <div className="st-main-header-right">
               <div className="st-nav">
                 <ul className="st-nav-list st-onepage-nav">
                   <li><a href="#home" className="st-smooth-move">Home</a></li>
                   <li><a href="#about" className="st-smooth-move">About</a></li>
-                  <li><a href="#resume" className="st-smooth-move">Resume</a></li>
+                  <li><a href="#case-studies" className="st-smooth-move">Case Studies</a></li>
+                  {/* <li><a href="#resume" className="st-smooth-move">Resume</a></li>
                   <li><a href="#portfolio" className="st-smooth-move">Portfolio</a></li>
-                  <li><a href="#blog" className="st-smooth-move">Blog</a></li>
+                  <li><a href="#blog" className="st-smooth-move">Blog</a></li> */}
                   <li><a href="#contact" className="header-color1 st-smooth-move">Contact</a></li>
                 </ul>
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

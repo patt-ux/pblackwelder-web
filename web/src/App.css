@@ -10,6 +10,9 @@
   box-sizing: border-box;
 }
 
+.st-mb30 {
+  margin-bottom: 30px;
+}
 /* Ensure template CSS classes work properly */
 .st-hero-wrap,
 .st-about-wrap,
@@ -540,6 +543,9 @@ a:hover {
   bottom: 0;
   left: 0;
   overflow: hidden
+}
+.st-site-footer{
+  padding: 20px 0;
 }
 
 .st-dark-bg {
@@ -1650,6 +1656,9 @@ canvas {
   .st-about-img-wrap {
     padding-right: 0px
   }
+}
+.st-iconbox-link {
+  cursor: pointer;
 }
 
 .st-iconbox.st-style1 {
@@ -2940,7 +2949,8 @@ canvas {
 }
 
 .st-form-field input,
-.st-form-field textarea {
+.st-form-field textarea,
+.st-form-field select {
   display: block;
   width: 100%;
   color: #a9adb8;
@@ -2951,6 +2961,23 @@ canvas {
   border-radius: 7px;
   -webkit-transition: all .4s ease;
   transition: all .4s ease
+}
+.st-form-field select {
+  cursor: pointer;
+    /* Hide default arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* Add custom background image (replace with your own SVG or image URL) */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23444%22%20d%3D%22M2%200L0%202h4zm0%205L0%203h4z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    /* Adjust right padding and vertical position */
+    background-position: right 10px center; /* 10px is the padding you want */
+    background-size: 8px 10px; /* Adjust size of your custom arrow */
+    
+    /* Add general padding to the select element for text alignment */
+    padding: 0.5em 3.5em 0.5em 1em; /* The right padding ensures text doesn't cover the icon area */
 }
 
 .st-form-field input::-webkit-input-placeholder,
@@ -3132,4 +3159,19 @@ canvas {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center
+}
+.st-wp-logo {
+  width: 50px;
+  height: 50px;
+  filter: invert(1);
+}
+.st-chrome-logo {
+  width: 50px;
+  height: 50px;
+  filter: grayscale(100%) brightness(90%) contrast(100%);
+}
+.st-minecraft-logo {
+  width: 50px;
+  height: 50px;
+  filter: grayscale(100%) brightness(90%) contrast(100%);
 }

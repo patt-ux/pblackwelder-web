@@ -2,6 +2,18 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const axios = require('axios');
 
+// Load environment variables for local development (emulator only)
+// Use try-catch to avoid errors during Firebase deployment analysis
+try {
+  // Only load dotenv when not in production and when running locally
+  if (process.env.NODE_ENV !== 'production' && !process.env.FIREBASE_CONFIG) {
+    require('dotenv').config();
+  }
+} catch (error) {
+  // dotenv is optional - ignore if not available
+  // This can happen during Firebase deployment analysis
+}
+
 admin.initializeApp();
 
 // Rate limiting configuration
@@ -10,47 +22,50 @@ const MAX_SUBMISSIONS_PER_WINDOW = 3; // Max submissions per email per window
 
 /**
  * Verify reCAPTCHA token with Google
+ * @param {string} token - The reCAPTCHA token to verify
+ * @return {Promise<{success: boolean, score: number}>} Verification result
  */
 async function verifyRecaptcha(token) {
-  const secretKey = functions.config().recaptcha?.secret_key;
-  
+  // Use environment variable instead of deprecated functions.config()
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+
   if (!secretKey) {
     console.warn('reCAPTCHA secret key not configured. Skipping verification.');
-    return { success: true, score: 1.0 }; // Allow if not configured
+    return {success: true, score: 1.0}; // Allow if not configured
   }
 
   try {
     const response = await axios.post(
-      'https://www.google.com/recaptcha/api/siteverify',
-      null,
-      {
-        params: {
-          secret: secretKey,
-          response: token,
+        'https://www.google.com/recaptcha/api/siteverify',
+        null,
+        {
+          params: {
+            secret: secretKey,
+            response: token,
+          },
         },
-      }
     );
 
-    const { success, score } = response.data;
-    
+    const {success, score} = response.data;
+
     // reCAPTCHA v3 returns a score from 0.0 to 1.0
     // 1.0 is very likely a human, 0.0 is very likely a bot
     // We'll accept scores >= 0.5
     const minScore = 0.5;
-    
+
     return {
       success: success && score >= minScore,
       score: score || 0,
     };
   } catch (error) {
     console.error('Error verifying reCAPTCHA:', error);
-    return { success: false, score: 0 };
+    return {success: false, score: 0};
   }
 }
 
 /**
  * Detect spam patterns in submission content
- * 
+ *
  * This function analyzes contact form submissions for common spam indicators:
  * - Explicit/adult content (common WordPress spam)
  * - Advertising/promotional language
@@ -58,24 +73,28 @@ async function verifyRecaptcha(token) {
  * - Suspicious URLs and domains
  * - Financial scams
  * - Missing required fields for specific submission types
- * 
- * Returns an object with spam detection results including score and reasons.
+ *
+ * @param {Object} submission - The submission object to analyze
+ * @return {Object} Object with spam detection results including score and reasons
  */
 function detectSpam(submission) {
   const spamPatterns = [
     // Advertising/promotional spam
+    // eslint-disable-next-line max-len
     /\b(advertise|advertising|advertisement|ads|promote|promotion|marketing|seo|search engine optimization)\b/i,
+    // eslint-disable-next-line max-len
     /\b(backlink|backlinks|link building|increase traffic|website traffic|organic traffic|boost your|improve ranking)\b/i,
     /\b(click here|visit our|check out|learn more about|see more|read more|find out more)\b/i,
     /\b(limited time|act now|don't miss|special offer|exclusive deal|discount|sale|buy now)\b/i,
     /\b(guaranteed|100% free|no cost|risk free|money back|free trial)\b/i,
-    
+
     // Generic promotional phrases (common spam)
     /\b(i like your website|nice website|great site|love your site|beautiful website)\b/i,
     /\b(we can help|we offer|our services|our company|our team|we provide)\b/i,
     /\b(contact us|reach out|get in touch with us|call us|email us|visit us)\b/i,
+    // eslint-disable-next-line max-len
     /\b(want to advertise|advertising opportunity|sponsorship|partnership opportunity)\b/i,
-    
+
     // Explicit/adult content spam (common WordPress spam)
     /\b(sex|porn|xxx|adult|nude|naked|escort|hooker|prostitute|dating|singles|meet singles)\b/i,
     /\b(casual encounters|hookup|one night stand|fuck|fucking|dick|pussy|ass|bitch)\b/i,
@@ -87,14 +106,14 @@ function detectSpam(submission) {
     /\b(strip club|stripclub|strip tease|lap dance|peep show)\b/i,
     /\b(swingers|swinger|swinging|threesome|orgy|orgies|gangbang)\b/i,
     /\b(incest|incestuous|rape|raping|molest|molestation|pedophile)\b/i,
-    
+
     // Suspicious patterns
     /\b(bit\.ly|tinyurl|short\.link|goo\.gl|t\.co|ow\.ly)\b/i, // URL shorteners
     /\b(crypto|bitcoin|cryptocurrency|investment|trading|forex|nft)\b/i,
     /\b(loan|debt|credit|refinance|mortgage|quick cash|payday)\b/i,
     /\b(pharmacy|pills|medication|prescription)\b/i,
     /\b(work from home|make money|earn \$|get rich|passive income)\b/i,
-    
+
     // Generic messages (often spam)
     /^(hi|hello|hey)[\s,]*$/i,
     /^(thanks?|thank you)[\s,]*$/i,
@@ -117,8 +136,8 @@ function detectSpam(submission) {
     submission.budget || '',
     submission.timeline || '',
   ]
-    .join(' ')
-    .toLowerCase();
+      .join(' ')
+      .toLowerCase();
 
   // Check for spam patterns
   const matchedPatterns = [];
@@ -155,17 +174,17 @@ function detectSpam(submission) {
 
   // Check message length (very short messages are often spam)
   const messageText = (
-    submission.message || 
-    submission.jobDescription || 
-    submission.projectDescription || 
+    submission.message ||
+    submission.jobDescription ||
+    submission.projectDescription ||
     ''
   ).trim();
   const isTooShort = messageText.length < 10 && messageText.length > 0;
 
   // Check for generic names
   const genericNames = ['test', 'admin', 'user', 'guest', 'spam', 'bot'];
-  const isGenericName = genericNames.some(name => 
-    submission.name && submission.name.toLowerCase().trim() === name
+  const isGenericName = genericNames.some((name) =>
+    submission.name && submission.name.toLowerCase().trim() === name,
   );
 
   // Calculate spam score
@@ -179,11 +198,11 @@ function detectSpam(submission) {
       /fuck|dick|pussy|ass|bitch|cam girl|erotic|fetish|bdsm/i,
       /penis|breast|orgasm|strip|swinger|incest|rape|molest/i,
     ];
-    
-    const hasExplicitContent = explicitPatterns.some(pattern => 
-      pattern.test(textContent)
+
+    const hasExplicitContent = explicitPatterns.some((pattern) =>
+      pattern.test(textContent),
     );
-    
+
     if (hasExplicitContent) {
       // Explicit content gets higher penalty
       spamScore += matchedPatterns.length * 5;
@@ -245,22 +264,24 @@ function detectSpam(submission) {
 
 /**
  * Check if email has exceeded rate limit
+ * @param {string} email - The email address to check
+ * @return {Promise<{allowed: boolean, count: number, limit: number}>} Rate limit status
  */
 async function checkRateLimit(email) {
   const now = admin.firestore.Timestamp.now();
   const windowStart = new admin.firestore.Timestamp(
-    now.seconds - (RATE_LIMIT_WINDOW_HOURS * 3600),
-    now.nanoseconds
+      now.seconds - (RATE_LIMIT_WINDOW_HOURS * 3600),
+      now.nanoseconds,
   );
 
   try {
     // Query recent submissions from this email
     const recentSubmissions = await admin
-      .firestore()
-      .collection('contactSubmissions')
-      .where('email', '==', email)
-      .where('timestamp', '>=', windowStart)
-      .get();
+        .firestore()
+        .collection('contactSubmissions')
+        .where('email', '==', email)
+        .where('timestamp', '>=', windowStart)
+        .get();
 
     return {
       allowed: recentSubmissions.size < MAX_SUBMISSIONS_PER_WINDOW,
@@ -270,7 +291,7 @@ async function checkRateLimit(email) {
   } catch (error) {
     console.error('Error checking rate limit:', error);
     // On error, allow the submission (fail open)
-    return { allowed: true, count: 0, limit: MAX_SUBMISSIONS_PER_WINDOW };
+    return {allowed: true, count: 0, limit: MAX_SUBMISSIONS_PER_WINDOW};
   }
 }
 
@@ -291,11 +312,19 @@ exports.onContactSubmission = functions.firestore
       let shouldDelete = false;
       let deleteReason = '';
 
+      // Check honeypot field - if filled, it's definitely a bot
+      if (submission.website_url && submission.website_url.trim() !== '') {
+        console.warn(`Honeypot triggered for submission ${submissionId}. Bot detected.`);
+        shouldDelete = true;
+        deleteReason = 'Honeypot field filled (bot detected)';
+      }
+
       // Verify reCAPTCHA if token is provided
-      if (submission.recaptchaToken) {
+      if (!shouldDelete && submission.recaptchaToken) {
         const recaptchaResult = await verifyRecaptcha(submission.recaptchaToken);
-        
+
         if (!recaptchaResult.success) {
+          // eslint-disable-next-line max-len
           console.warn(`reCAPTCHA verification failed for submission ${submissionId}. Score: ${recaptchaResult.score}`);
           shouldDelete = true;
           deleteReason = `reCAPTCHA verification failed (score: ${recaptchaResult.score})`;
@@ -311,18 +340,18 @@ exports.onContactSubmission = functions.firestore
       // Check spam patterns
       if (!shouldDelete) {
         const spamResult = detectSpam(submission);
-        
+
         if (spamResult.isSpam) {
           console.warn(
-            `Spam detected for submission ${submissionId}. ` +
-            `Score: ${spamResult.spamScore}, Reasons: ${spamResult.reasons}`
+              `Spam detected for submission ${submissionId}. ` +
+              `Score: ${spamResult.spamScore}, Reasons: ${spamResult.reasons}`,
           );
           shouldDelete = true;
           deleteReason = `Spam detected (score: ${spamResult.spamScore}): ${spamResult.reasons}`;
         } else if (spamResult.spamScore > 0) {
           // Log suspicious but not spam submissions
           console.log(
-            `Suspicious submission ${submissionId} (score: ${spamResult.spamScore}) but below threshold`
+              `Suspicious submission ${submissionId} (score: ${spamResult.spamScore}) but below threshold`,
           );
         }
       }
@@ -330,13 +359,14 @@ exports.onContactSubmission = functions.firestore
       // Check rate limit
       if (!shouldDelete) {
         const rateLimitResult = await checkRateLimit(submission.email);
-        
+
         if (!rateLimitResult.allowed) {
           console.warn(
-            `Rate limit exceeded for ${submission.email}. ` +
-            `Count: ${rateLimitResult.count}/${rateLimitResult.limit}`
+              `Rate limit exceeded for ${submission.email}. ` +
+              `Count: ${rateLimitResult.count}/${rateLimitResult.limit}`,
           );
           shouldDelete = true;
+          // eslint-disable-next-line max-len
           deleteReason = `Rate limit exceeded: ${rateLimitResult.count} submissions in the last ${RATE_LIMIT_WINDOW_HOURS} hour(s)`;
         }
       }
@@ -345,7 +375,7 @@ exports.onContactSubmission = functions.firestore
       if (shouldDelete) {
         console.log(`Deleting spam submission ${submissionId}. Reason: ${deleteReason}`);
         await snap.ref.delete();
-        
+
         // Optionally, log spam attempts
         await admin.firestore().collection('spamLogs').add({
           submissionId,
@@ -353,13 +383,13 @@ exports.onContactSubmission = functions.firestore
           reason: deleteReason,
           timestamp: admin.firestore.FieldValue.serverTimestamp(),
         });
-        
+
         return null;
       }
 
       // Submission passed all checks
       console.log(`Contact submission ${submissionId} verified and accepted`);
-      
+
       // TODO: Add email notification logic here
       // Example: Send email using nodemailer, SendGrid, etc.
 
